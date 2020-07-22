@@ -2,7 +2,7 @@
     <q-item
             clickable
             tag="a"
-            :href="link"
+            :to="link"
             :class="this.$route.params.tab === link ? 'bg-white border-left' : ''"
     >
         <q-item-section

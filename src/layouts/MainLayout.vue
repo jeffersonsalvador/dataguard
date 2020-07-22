@@ -22,7 +22,7 @@
         </q-drawer>
 
         <q-page-container>
-            <router-view class="q-ma-lg"/>
+            <router-view class="q-pa-lg"/>
         </q-page-container>
     </q-layout>
 </template>
