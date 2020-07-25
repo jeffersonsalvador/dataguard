@@ -16,7 +16,7 @@
                 <EssentialLink
                         :key="link.title"
                         v-bind="link"
-                        v-for="link in links"
+                        v-for="link in tabs"
                 />
             </q-list>
         </q-drawer>
@@ -41,7 +41,7 @@
         data() {
             return {
                 leftDrawerOpen: true,
-                links: [],
+                tabs: [],
                 plugins: []
             };
         },
@@ -49,13 +49,24 @@
         beforeMount() {
             axios.get('https://dataguard.blob.core.windows.net/challenges/plugins/fe-challenge.json')
                 .then((response) => {
-                    const {tabs, tabdata, plugins} = response.data.data
+                    const {tabs, tabdata} = response.data.data
                     tabs.map(tab => {
-                        this.links.push(
+                        // let cards = []
+                        // tabdata[tab].active.map( plugin => {
+                        //     cards.push({plugin, active: true, inactive: false})
+                        // })
+                        // tabdata[tab].disabled.map( plugin => {
+                        //     cards.push({plugin, active: false, inactive: false})
+                        // })
+                        // tabdata[tab].disabled.map( plugin => {
+                        //     cards.push({plugin, active: true, inactive: true})
+                        // })
+                        this.tabs.push(
                             {
                                 title: tabdata[tab].title,
                                 link: tab,
-                                icon: tabdata[tab].icon
+                                icon: tabdata[tab].icon,
+                                // plugins: cards
                             }
                         )
                     })
@@ -63,6 +74,7 @@
         },
 
         mounted() {
+            // console.log(this.tabs)
         },
     };
 </script>
