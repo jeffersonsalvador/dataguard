@@ -1,8 +1,9 @@
 <template>
     <div>
-        <h1 class="card-title">Marketing plugins</h1>
+        <h1 class="card-title">{{ title }} plugins</h1>
         <div class="row q-col-gutter-lg">
-            <div v-for="(card, key) in cards" :key="key" class="col-4" :disabled="card.disabled">
+            <template v-if="cards()">
+            <div v-for="(card, key) in cards().plugins" :key="key" class="col-4" :disabled="card.disabled">
                 <q-card class="no-box-shadow rounded-borders full-height" bordered>
                     <q-card-section>
                         <div class="row">
@@ -13,8 +14,7 @@
                                     :text="card.active ? 'green' : 'red'"
                                     :label="card.active ? 'Allowed': 'Blocked'"
                                     v-model="card.active"
-                                    :disabled="card.disabled"
-                                    class=""
+                                    :disable="card.disabled"
                                 />
                             </div>
                         </div>
@@ -26,6 +26,8 @@
                     </q-card-section>
                 </q-card>
             </div>
+            </template>
+            <template v-else>loading...</template>
         </div>
     </div>
 </template>
@@ -36,51 +38,58 @@
         name: "Plugins",
         data () {
             return {
-                cards: []
+                title: '',
+                tabs: []
             }
         },
         mounted() {
-            this.getCards(this.$route.params.tab)
+            this.getCards()
 
         },
+        computed: {
+            tab() {
+                return this.$route.params.tab
+            }
+        },
         watch: {
-            $route(to) {
-                this.getCards(to.params.tab)
+            $route() {
+                this.getTitle()
             }
         },
         methods: {
-            getCards (tab) {
-                this.cards = []
+            cards() {
+                return this.tabs[this.tab]
+            },
+            getTitle() {
+                this.title = this.tabs[this.tab].title
+            },
+            getPlugins(tab, tabdata, plugins) {
+                let status = ['active', 'inactive', 'disabled']
+                let allPlugins = []
+                status.map(status => {
+                    tabdata[tab][status].map( plugin => {
+                        allPlugins.push({
+                            title: plugins[plugin].title,
+                            description: plugins[plugin].description,
+                            active: status === 'active' ? true : false,
+                            disabled: status === 'disabled' ? true : false
+                        })
+                    })
+                })
+                return allPlugins
+            },
+            getCards () {
                 axios.get('https://dataguard.blob.core.windows.net/challenges/plugins/fe-challenge.json')
                     .then(response => {
-                        const {tabdata, plugins} = response.data.data
-                        tabdata[tab].active.map( plugin => {
-                            this.cards.push({
-                                title: plugins[plugin].title,
-                                description: plugins[plugin].description,
-                                name: plugin,
-                                active: true,
-                                disabled: false
-                            })
+                        const {tabs, tabdata, plugins} = response.data.data
+                        tabs.map( tab => {
+                            let cards = this.getPlugins(tab, tabdata, plugins)
+                            this.tabs[tab] = {
+                                title: tabdata[tab].title,
+                                plugins: cards
+                            }
                         })
-                        tabdata[tab].disabled.map( plugin => {
-                            this.cards.push({
-                                title: plugins[plugin].title,
-                                description: plugins[plugin].description,
-                                name: plugin,
-                                active: true,
-                                disabled: true
-                            })
-                        })
-                        tabdata[tab].inactive.map( plugin => {
-                            this.cards.push({
-                                title: plugins[plugin].title,
-                                description: plugins[plugin].description,
-                                name: plugin,
-                                active: false,
-                                disabled: false
-                            })
-                        })
+                        this.getTitle(this.$route.params.tab)
                     })
             }
         }
