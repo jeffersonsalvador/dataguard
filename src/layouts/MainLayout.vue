@@ -23,6 +23,7 @@
                 </div>
                 <div class="col-auto justify-center q-pa-md row">
                         <q-toggle
+                            v-if="this.$route.params.tab"
                             :color="allPlugins ? 'green' : 'red'"
                             :text-color="allPlugins ? 'green' : 'red'"
                             :label="allPlugins ? 'All plugins enabled ': 'All plugins disabled'"
