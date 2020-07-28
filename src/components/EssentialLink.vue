@@ -9,7 +9,7 @@
                 v-if="icon"
                 avatar
         >
-            <q-icon :name="icon"/>
+            <q-icon :name="`img:img/${icon}.svg`" />
         </q-item-section>
 
         <q-item-section>

@@ -5,19 +5,35 @@
                 show-if-above
                 v-model="leftDrawerOpen"
         >
-            <q-list>
-                <q-item-label
-                        class="text-main-color text-center q-my-md"
-                        header
-                >
-                    <span class="logo">Data<strong>Guard</strong></span>
-                </q-item-label>
-                <EssentialLink
-                        :key="link.title"
-                        v-bind="link"
-                        v-for="link in tabs"
-                />
-            </q-list>
+            <div class="column full-height">
+                <div class="col">
+                    <q-list>
+                        <q-item-label
+                                class="text-main-color text-center q-my-md"
+                                header
+                        >
+                            <span class="logo">Data<strong>Guard</strong></span>
+                        </q-item-label>
+                        <EssentialLink
+                                :key="link.title"
+                                v-bind="link"
+                                v-for="link in tabs"
+                        />
+                    </q-list>
+                </div>
+                <div class="col-auto justify-center q-pa-md row">
+                        <q-toggle
+                            :color="allPlugins ? 'green' : 'red'"
+                            :text-color="allPlugins ? 'green' : 'red'"
+                            :label="allPlugins ? 'All plugins enabled ': 'All plugins disabled'"
+                            :left-label="true"
+                            v-model="allPlugins"
+                            checked-icon="check"
+                            unchecked-icon="clear"
+                            @input="changePlugins"
+                        />
+                </div>
+            </div>
         </q-drawer>
 
         <q-page-container>
@@ -40,7 +56,8 @@
         data() {
             return {
                 leftDrawerOpen: true,
-                tabs: []
+                tabs: [],
+                allPlugins: true
             };
         },
 
@@ -58,6 +75,11 @@
                         )
                     })
                 });
+        },
+        methods: {
+            changePlugins () {
+                this.$root.$emit('changePlugins', this.allPlugins)
+            }
         }
     };
 </script>
